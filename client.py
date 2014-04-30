@@ -5,7 +5,7 @@
 from socket import *
 
 # Name and port number of the server to # which want to connect .
-serverName = 'ecs.fullerton.edu'
+serverName = '127.0.0.1'
 serverPort = 12000
 
 # Create a socket
