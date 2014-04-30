@@ -16,7 +16,6 @@ serverSocket.bind(( '', serverPort ))
 serverSocket.listen(1)
 print "Server Socket listening"
 
-
 # Forever accept incoming connections
 while 1:
     
@@ -27,8 +26,9 @@ while 1:
 
     # The temporary buffer
     tmpBuff = ""
-
-    while len(data) != 40:
+    data = ""
+    
+    while not len(data) == 40:
         # Receive whatever the newly connected client has to send
         tmpBuff = connectionSocket.recv(40)
 
