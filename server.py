@@ -1,7 +1,6 @@
 # Server code
 from socket import *
 import commands
-import ftplib
 
 # The port on which to listen
 serverPort = 12001
@@ -30,7 +29,7 @@ while 1:
     tmpBuff = ""
     data = ""
 
-    # accept commands from client
+    # accept commands from client forever
     while not len(data) == 40:
         # Receive whatever the newly connected client has to send
         tmpBuff = connectionSocket.recv(40)

@@ -1,6 +1,5 @@
 #import ephemeral
 #import cmds
-import ftplib
 
 # Client code
 from socket import *
@@ -23,12 +22,12 @@ while(1):
     x = raw_input('>ftp')
     data = x
 
-bytesSent = 0
+    bytesSent = 0
 
-# Keep sending bytes until all bytes are sent
-while bytesSent != len(data): 
-    # Send that string !
-    bytesSent += clientSocket.send(data[bytesSent:])
+    # Keep sending bytes until all bytes are sent
+    while bytesSent != len(data): 
+        # Send that string !
+        bytesSent += clientSocket.send(data[bytesSent:])
 
-# Close the socket
-clientSocket.close()
+    # Close the socket
+    clientSocket.close()
