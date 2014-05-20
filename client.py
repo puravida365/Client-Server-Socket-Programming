@@ -1,12 +1,14 @@
 #import ephemeral
 #import cmds
+import ftplib
 
 # Client code
 from socket import *
 
 # Name and port number of the server to # which want to connect .
 serverName = '127.0.0.1'
-serverPort = 12000
+serverPort = 12001
+filename = 't.txt'
 
 # Create a socket
 clientSocket = socket(AF_INET, SOCK_STREAM)
@@ -15,7 +17,11 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect(( serverName , serverPort ))
 
 # A string we want to send to the server
-data = "Hello world! This is a very long string."
+#data = "ftp put" + 
+
+while(1):
+    x = raw_input('>ftp')
+    data = x
 
 bytesSent = 0
 

@@ -1,8 +1,10 @@
 # Server code
 from socket import *
+import commands
+import ftplib
 
 # The port on which to listen
-serverPort = 12000
+serverPort = 12001
 
 # Create a TCP socket
 serverSocket = socket(AF_INET,SOCK_STREAM)
@@ -27,7 +29,8 @@ while 1:
     # The temporary buffer
     tmpBuff = ""
     data = ""
-    
+
+    # accept commands from client
     while not len(data) == 40:
         # Receive whatever the newly connected client has to send
         tmpBuff = connectionSocket.recv(40)
@@ -39,6 +42,8 @@ while 1:
         # Save the data
         data += tmpBuff 
 
-    print data
+    # do commands
+    for line in commands.getstatusoutput(data):
+        print line
     # Close the socket
     connectionSocket.close()
