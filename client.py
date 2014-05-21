@@ -1,33 +1,72 @@
-#import ephemeral
-#import cmds
+import socket
+import os
+import sys
+from functions import *
 
 # Client code
 from socket import *
 
-# Name and port number of the server to # which want to connect .
-serverName = '127.0.0.1'
-serverPort = 12001
-filename = 't.txt'
+def listen():
+    # Start listening for incoming connections
+    clientSocket.listen(1)
+    print "Client Socket listening"
 
-# Create a socket
-clientSocket = socket(AF_INET, SOCK_STREAM)
+def connect(port):
+    # Name and port number of the server to # which want to connect .
+    serverName = '127.0.0.1'
+    serverPort = port
 
-# Connect to the server
-clientSocket.connect(( serverName , serverPort ))
+    # Create a socket
+    clientSocket = socket(AF_INET, SOCK_STREAM)
 
-# A string we want to send to the server
-#data = "ftp put" + 
+    # Connect to the server
+    clientSocket.connect(( serverName , serverPort ))
 
-while(1):
-    x = raw_input('>ftp')
-    data = x
+    return clientSocket
 
-    bytesSent = 0
 
-    # Keep sending bytes until all bytes are sent
-    while bytesSent != len(data): 
-        # Send that string !
-        bytesSent += clientSocket.send(data[bytesSent:])
+def getData(mysocket):
+    # get data from user
+    while(1):
+        x = raw_input('>ftp ')
+        b = x.split(" ")
+        cmd = b[0] 
+        if len(b) == 1:
+            cmd = b[0]
+        else:
+            cmd = b[0]
+            fileName = b[1]
 
-    # Close the socket
-    clientSocket.close()
+        # based on user input call appropriate function
+        if cmd == 'put':
+            #call put function
+            put(fileName, serverPort)
+        elif cmd == 'get':
+            #call get function
+            get(fileName, serverPort)
+        elif cmd == 'ls':
+            #list files on server
+            listFiles(cmd, mysocket)
+        elif cmd == 'quit':
+            #quit program
+            quit()
+        else:
+            # print menu options
+            other()
+
+def main():
+    # Command line checks 
+    if len(sys.argv) < 2:
+        print "USAGE python " + sys.argv[0] + " <Port Number to connect to>" 
+        sys.exit(1)
+
+    filename = sys.argv[0]
+    serverPort = int(sys.argv[1])
+
+    mysocket = connect(serverPort)
+    getData(mysocket)
+
+    listen()
+
+if __name__ == '__main__':
+    main()
