@@ -58,6 +58,7 @@ def getData(mysocket):
         elif cmd == 'get':
             #call get function
             get(fileName, mysocket)
+
         elif cmd == 'ls':
             #list files on server
             transfer(cmd, mysocket)
@@ -74,6 +75,7 @@ def getData(mysocket):
         x = raw_input('>ftp ')
         b = x.split(" ")
         cmd = b[0] 
+
 
 def main():
     # Command line checks 

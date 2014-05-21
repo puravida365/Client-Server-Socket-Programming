@@ -38,15 +38,16 @@ def main():
         # Accept a connection and get client 's socket
         connectionSocket , addr = serverSocket.accept()
 
-        # The temporary buffer
         tmpBuff = ""
         data = ""
 
         # accept commands from client forever
         while not len(data) == 40:
+            tmpBuff = ""
+            data = ""
+
             # Receive whatever the newly connected client has to send
             tmpBuff = connectionSocket.recv(40)
-            fileName = connectionSocket.recv(40)
 
             # The other side unexpectedly closed it 's socket
             if not tmpBuff : 
@@ -55,14 +56,19 @@ def main():
             # Save the data
             data += tmpBuff 
 
+            print data
+
             # do commands
 
             if data == 'ls':
                 lsoutput = subprocess.Popen(['ls','-1'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
                 output = lsoutput.stdout.read()
                 connectionSocket.send(output)
+
             elif data == 'put':
-                
+                fileName = ""
+                fileName = connectionSocket.recv(40)
+                print fileName
                 # The buffer to all data received from the
                 # the client.
                 fileData = ""
