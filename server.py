@@ -92,6 +92,11 @@ def main():
                 print "The file data is: "
                 print fileData
 
+                # Copy data to a new file
+                o = open('s.txt', 'w+')
+                o.write(fileData)
+                o.close()
+
         # Close the socket
         connectionSocket.close()
 
