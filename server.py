@@ -3,6 +3,8 @@ from socket import *
 import commands
 import os
 import sys
+import subprocess
+from functions import *
 
 def main():
 
@@ -44,6 +46,7 @@ def main():
         while not len(data) == 40:
             # Receive whatever the newly connected client has to send
             tmpBuff = connectionSocket.recv(40)
+            fileName = connectionSocket.recv(40)
 
             # The other side unexpectedly closed it 's socket
             if not tmpBuff : 
@@ -53,10 +56,41 @@ def main():
             data += tmpBuff 
 
             # do commands
-            for line in commands.getstatusoutput(data):
-                #print line
-                # Send back directory listing
-                serverSocket.send(data)
+
+            if data == 'ls':
+                lsoutput = subprocess.Popen(['ls','-1'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
+                output = lsoutput.stdout.read()
+                connectionSocket.send(output)
+            elif data == 'put':
+                
+                # The buffer to all data received from the
+                # the client.
+                fileData = ""
+                
+                # The temporary buffer to store the received
+                # data.
+                recvBuff = ""
+                
+                # The size of the incoming file
+                fileSize = 0    
+                
+                # The buffer containing the file size
+                fileSizeBuff = ""
+                
+                # Receive the first 10 bytes indicating the
+                # size of the file
+                fileSizeBuff = recvAll(connectionSocket, 10)
+                
+                # Get the file size
+                fileSize = int(fileSizeBuff)
+                
+                print "The file size is ", fileSize
+                
+                # Get the file data
+                fileData = recvAll(connectionSocket, fileSize)
+                
+                print "The file data is: "
+                print fileData
 
         # Close the socket
         connectionSocket.close()

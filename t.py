@@ -1,5 +1,6 @@
-x = raw_input('>ftp ')
-b = x.split(" ")
-cmd = b[0] 
-fileName = b[1]
+fileData = 'hdhdhdh'
 
+# Copy data to a new file
+o = open('s.txt', 'w+')
+o.write(fileData)
+o.close()

@@ -6,10 +6,20 @@ from functions import *
 # Client code
 from socket import *
 
-def listen():
+def listen(mysocket, serverPort):
+    newport = serverPort + 1
     # Start listening for incoming connections
-    clientSocket.listen(1)
-    print "Client Socket listening"
+    #mysocket.listen(1)
+    # Create a TCP socket
+    mysocket = socket(AF_INET,SOCK_STREAM)
+    
+    # Bind the socket to the port
+    mysocket.bind(( '', newport ))
+
+    # Start listening for incoming connections
+    mysocket.listen(1)
+    
+    mysocket.send(newport)
 
 def connect(port):
     # Name and port number of the server to # which want to connect .
@@ -27,10 +37,11 @@ def connect(port):
 
 def getData(mysocket):
     # get data from user
-    while(1):
-        x = raw_input('>ftp ')
-        b = x.split(" ")
-        cmd = b[0] 
+    x = raw_input('>ftp ')
+    b = x.split(" ")
+    cmd = b[0]
+
+    while cmd != 'quit':
         if len(b) == 1:
             cmd = b[0]
         else:
@@ -40,19 +51,29 @@ def getData(mysocket):
         # based on user input call appropriate function
         if cmd == 'put':
             #call put function
-            put(fileName, serverPort)
+            transfer(cmd, mysocket)
+            transfer(fileName, mysocket)
+            put(fileName, mysocket)
+
         elif cmd == 'get':
             #call get function
-            get(fileName, serverPort)
+            get(fileName, mysocket)
         elif cmd == 'ls':
             #list files on server
-            listFiles(cmd, mysocket)
+            transfer(cmd, mysocket)
+            lsoutput = mysocket.recv(1024)
+            print lsoutput
+
         elif cmd == 'quit':
             #quit program
             quit()
         else:
             # print menu options
             other()
+
+        x = raw_input('>ftp ')
+        b = x.split(" ")
+        cmd = b[0] 
 
 def main():
     # Command line checks 
@@ -66,7 +87,8 @@ def main():
     mysocket = connect(serverPort)
     getData(mysocket)
 
-    listen()
+
+    #listen(mysocket, serverPort)
 
 if __name__ == '__main__':
     main()

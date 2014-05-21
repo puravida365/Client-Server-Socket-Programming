@@ -1,93 +1,61 @@
-# *****************************************************
-# This file implements a server for receiving the file
-# sent using sendfile(). The server receives a file and
-# prints it's contents.
-# *****************************************************
+#!/usr/bin/python 
+import sys
+from socket import *
+import subprocess
+def bind_(host, port):
+    st = socket(AF_INET, SOCK_STREAM)
+    st.bind((host,port))
+    st.listen(5)
+    while 1:
+        con, addr = st.accept()
+        while 1:
+           try:
+                cmd = con.recv(30)
+            #print cmd
+            if "lst" in cmd:
+                pop = subprocess.Popen(['ls','-1'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.PIPE)
 
-import socket
+                data = pop.stdout.read()
+                con.send(data)
 
-# The port on which to listen
-listenPort = 1234
+            elif "get" in cmd:
+                foo = cmd.split("get ")[1].split("\r")[0]
+                try:    
+                    off = open(foo, 'r')
+                                data = off.read()
+                    con.send("ok\r\n")
+                    con.send(str(off.tell())+"\r\n")
+                                con.send(data +"\r\n")
 
-# Create a welcome socket. 
-welcomeSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                except:
+                    con.send("wr\r\n")
 
-# Bind the socket to the port
-welcomeSock.bind(('', listenPort))
+            elif "put" in cmd:
+                print "i am inside put()"
+                            foo = cmd.split("put ")[1].split("\r")[0]
+                print "yeah i got your file name "
+                #print repr(foo)
+                o = open(foo,'wb')
+                l = con.recv(1024).strip()
+                con.settimeout(5)
+                while (1):
+                    o.write(l)
+                    try:
+                                    l = con.recv(1024).strip()
+                    except:
+                        break
 
-# Start listening on the socket
-welcomeSock.listen(1)
+                                o.close()
 
-# ************************************************
-# Receives the specified number of bytes
-# from the specified socket
-# @param sock - the socket from which to receive
-# @param numBytes - the number of bytes to receive
-# @return - the bytes received
-# *************************************************
-def recvAll(sock, numBytes):
+            else:
+                continue
 
-    # The buffer
-    recvBuff = ""
-    
-    # The temporary buffer
-    tmpBuff = ""
-    
-    # Keep receiving till all is received
-    while len(recvBuff) < numBytes:
-        
-        # Attempt to receive bytes
-        tmpBuff =  sock.recv(numBytes)
-        
-        # The other side has closed the socket
-        if not tmpBuff:
-            break
-        
-        # Add the received bytes to the buffer
-        recvBuff += tmpBuff
-    
-    return recvBuff
-        
-# Accept connections forever
-while True:
-    
-    print "Waiting for connections..."
-        
-    # Accept connections
-    clientSock, addr = welcomeSock.accept()
-    
-    print "Accepted connection from client: ", addr
-    print "\n"
-    
-    # The buffer to all data received from the
-    # the client.
-    fileData = ""
-    
-    # The temporary buffer to store the received
-    # data.
-    recvBuff = ""
-    
-    # The size of the incoming file
-    fileSize = 0    
-    
-    # The buffer containing the file size
-    fileSizeBuff = ""
-    
-    # Receive the first 10 bytes indicating the
-    # size of the file
-    fileSizeBuff = recvAll(clientSock, 10)
-        
-    # Get the file size
-    fileSize = int(fileSizeBuff)
-    
-    print "The file size is ", fileSize
-    
-    # Get the file data
-    fileData = recvAll(clientSock, fileSize)
-    
-    print "The file data is: "
-    print fileData
-        
-    # Close our side
-    clientSock.close()
-    
+           except:
+                continue           
+    con.close()
+    st.close()
+
+if __name__ == "__main__":
+        server = "127.0.0.1"
+        port = int(sys.argv[1])
+        bind_(server, port)

@@ -3,7 +3,7 @@ import os
 import sys
 
 
-def put(fileName, ServerPort):
+def put(fileName, mysocket):
 
     # Open the file
     fileObj = open(fileName, "r")
@@ -43,23 +43,21 @@ def put(fileName, ServerPort):
             
             # Send the data!
             while len(fileData) > numSent:
-                numSent += connSock.send(fileData[numSent:])
+                numSent += mysocket.send(fileData[numSent:])
         
         # The file has been read. We are done
         else:
             break
 
-
-    print "Sent ", numSent, " bytes."
+    # print "Sent ", numSent, " bytes."
         
-    # Close the socket and the file
-    connSock.close()
+    # Close the file
     fileObj.close()
 
 def get(filename):
     print 'Ill get it'
 
-def listFiles(x, mysocket):
+def transfer(x, mysocket):
     data = x
 
     bytesSent = 0
@@ -79,3 +77,25 @@ def other():
     print 'get followed by filename'
     print 'ls - prints out files on server'
     print 'quit - exits program'
+
+def recvAll(sock, numBytes):
+    # The buffer
+    recvBuff = ""
+    
+    # The temporary buffer
+    tmpBuff = ""
+    
+    # Keep receiving till all is received
+    while len(recvBuff) < numBytes:
+        
+        # Attempt to receive bytes
+        tmpBuff =  sock.recv(numBytes)
+        
+        # The other side has closed the socket
+        if not tmpBuff:
+            break
+        
+        # Add the received bytes to the buffer
+        recvBuff += tmpBuff
+    
+    return recvBuff
